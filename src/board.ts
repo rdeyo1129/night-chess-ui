@@ -37,6 +37,27 @@ export function setCheck(state: HeadlessState, color: cg.Color | boolean): void 
     }
 }
 
+export function setRoyalty(state: HeadlessState, square: cg.Key | undefined, color: string): void {
+  if (color === 'white') {
+    state.wRoyalty = square;
+  } else {
+    state.bRoyalty = square;
+  }
+}
+
+export function setVisibility(color: string, visible: boolean | undefined): void {
+  const cgPieces = document.getElementsByTagName('piece');
+
+  for (let i = 0; i < cgPieces.length; i++) {
+    if (cgPieces[i].classList.contains(color) && !visible) {
+      cgPieces[i].classList.add('invisible');
+    }
+    if (cgPieces[i].classList.contains(color) && visible) {
+      cgPieces[i].classList.remove('invisible');
+    }
+  }
+}
+
 function setPremove(state: HeadlessState, orig: cg.Key, dest: cg.Key, meta: cg.SetPremoveMetadata): void {
   unsetPredrop(state);
   state.premovable.current = [orig, dest];
@@ -337,6 +358,7 @@ export function getSnappedKeyAtDomPos(
 ): cg.Key | undefined {
   const origPos = key2pos(orig);
   const validSnapPos = allPos.filter(pos2 => {
+    // place spectre in here for some reason?
     return queen(origPos[0], origPos[1], pos2[0], pos2[1]) || knight(origPos[0], origPos[1], pos2[0], pos2[1]);
   });
   const validSnapCenters = validSnapPos.map(pos2 => computeSquareCenter(pos2key(pos2), asWhite, bounds));
